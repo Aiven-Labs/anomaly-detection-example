@@ -40,7 +40,7 @@ public class Config {
     }
 
     /** Gather our `-D` command line switch values */
-    public static Properties getConfig(String defaultInputTopic, String defaultOutputTopic) {
+    public static Properties getConfig() {
         // We put them all into one configuration, even though they really fall into four groups
         // Kafka access
         String kafkaServiceUri = System.getProperty("KAFKA_SERVICE_URI");
@@ -138,12 +138,6 @@ public class Config {
         if (isNullOrEmpty(schemaRegistryUserName)) {
             schemaRegistryUserName = "avnadmin";
         }
-        if (isNullOrEmpty(inputTopic)) {
-            inputTopic = defaultInputTopic;
-        }
-        if (isNullOrEmpty(outputTopic)) {
-            outputTopic = defaultOutputTopic;
-        }
 
         Properties config = new Properties();
         config.put(StreamsConfig.APPLICATION_ID_CONFIG, "json-filter-application");
@@ -179,6 +173,11 @@ public class Config {
         // Topic names
         config.put("input.topic.name", inputTopic);
         config.put("output.topic.name", outputTopic);
+
+        // Bounds
+        config.put("field.name", fieldName);
+        config.put("min.bound", minBound);
+        config.put("max.bound", maxBound);
 
         // Exactly once semantics, if requested
         if (exactlyOnce) {

@@ -71,8 +71,11 @@ tasks.named('test') {
     // See https://docs.gradle.org/current/javadoc/org/gradle/api/tasks/testing/logging/TestLoggingContainer.html
     // for the documentation for `testLogging`
     testLogging {
-        events "passed", "skipped", "failed"
-        // A more complete list would be:
+	// Basic list
+        //events "passed", "skipped", "failed"
+	// Basic list plus log.info messages
+        events "failed", "passed", "skipped", "standardError"
+        // An even more complete list would be:
         //events "failed", "passed", "skipped", "standardError","standardOut", "started"
     }
 }

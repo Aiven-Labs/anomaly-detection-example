@@ -9,15 +9,13 @@
 # - SCHEMA_REGISTRY_URL - the URL for the Karapace schema
 # - SCHEMA_REGISTRY_PASSWORD - the password for the schema registry
 #
+# We also need the names of the input and output topics
+# - INPUT_TOPIC - the input topic name
+# - OUTPUT_TOPIC - the output topic name
+#
 # If you give a value for SCHEMA_REGISTRY_USERNAME we'll use it, otherwise
 # we'll use the default value, which is "avnadmin"
 export SCHEMA_REGISTRY_USERNAME=${SCHEMA_REGISTRY_USERNAME:-"avnadmin"}
-#
-# You can also give values for INPUT_TOPIC and OUTPUT_TOPIC, but if
-# they're unset, then the Java application will use an appropriate
-# default
-export INPUT_TOPIC=${INPUT_TOPIC:-""}
-export OUTPUT_TOPIC=${OUTPUT_TOPIC:-""}
 #
 # You can also request exactly once semantics by specifying true.
 # The case of the value does not matter. The default is false.

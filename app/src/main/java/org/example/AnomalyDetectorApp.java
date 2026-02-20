@@ -24,8 +24,28 @@ import java.util.concurrent.CountDownLatch;
 public class AnomalyDetectorApp {
     private static final Logger log = LoggerFactory.getLogger(AnomalyDetectorApp.class);
 
-    // Define the state we are filtering on
-    private static final String KEEP_STATE = "Delivered";
+    /** Is the name field in this value outside the bounds given?
+     *
+     * We also decide that if the field is `null` then it counts as out of bounds.
+     */
+    private static boolean outsideBounds(GenericRecord value, String fieldName, int minBound, int maxBound) {
+
+        // PLAYING WITH INTROSPECTION
+        /* Schema */ var schema = value.getSchema();
+        /* Schema.Field */ var field = schema.getField(fieldName);
+        /* Schema */ var fieldSchema = field.schema();
+        /* Schema.Type */ var fieldType = fieldSchema.getType();
+        /* LogicalType */ var fieldLogicalType = fieldSchema.getLogicalType();
+        log.info("Field {} is type {}, logical type {}", fieldName, fieldType, fieldLogicalType);
+        // DONE PLAYING
+
+        var val = value.get(fieldName);
+        if (val instanceof Integer num) {
+            return num < minBound || num > maxBound;
+        } else {
+            return true;
+        }
+    }
 
     public static Topology buildTopology(Properties config, Map<String, String> serdeConfig)
     {
@@ -50,15 +70,16 @@ public class AnomalyDetectorApp {
         // the nominated range
         // Use `peek` to output log messages at various points.
         //
-        // 1. I don't really need to put the type information into each lambda (except the final `peek` where it does
-        //    help), but I feel it makes it more obvious what the control flow is.
-        //    For instance, I could do `.filter( (key, inputValue) -> inputValue.getState().equals(KEEP_STATE) )`
-        // 2. In a real production app, we don't need all three `peek` calls - but in an example and during development
+        // 1. I don't really need to put the type information into each lambda, but I feel it makes it more obvious
+        //    what the control flow is.
+        // 2. In a real production app, we don't need the `peek` calls - but in an example and during development
         //    they're quite nice for explicitly logging what is going on
         sourceStream
                 .peek( (String key, GenericRecord inputValue) -> log.info("LOOKING AT: Value='{}'", inputValue) )
-                .filter( (String key, GenericRecord inputValue) -> inputValue.get("state").toString().equals(KEEP_STATE) )
-                .peek( ( String key, GenericRecord inputValue) -> log.info("KEEPING: Value='{}'", inputValue) )
+                .filter( (String key, GenericRecord inputValue) -> outsideBounds(inputValue,
+                        config.get("field.name").toString(), (int) config.get("min.bound"), (int) config.get("max.bound")) )
+                .peek( ( String key, GenericRecord inputValue) -> log.info("OUT OF BOUNDS: Value='{}' not {} <= {} <= {}",
+                        inputValue, config.get("min.bound"), config.get("field.name"), config.get("max.bound")) )
                 .to(
                         config.get("output.topic.name").toString(),
                         Produced.with(Serdes.String(), avroMessageSerde)
@@ -69,7 +90,7 @@ public class AnomalyDetectorApp {
     }
 
     public static void main(String[] args) {
-        Properties config = Config.getConfig("logistics_data_gen", "logistics_data_delivered");
+        Properties config = Config.getConfig();
         final Map<String, String> serdeConfig = Config.getSerdeConfig(config);
 
         Topology topology = buildTopology(config, serdeConfig);

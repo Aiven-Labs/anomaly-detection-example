@@ -43,11 +43,11 @@ class AnomalyDetectorAppTests {
     @DisplayName("When field to check is an int")
     class InputIsPartialData {
 
-        static TestInputTopic inputTopic;
-        static TestOutputTopic outputTopic;
+        static TestInputTopic<String, GenericRecord> inputTopic;
+        static TestOutputTopic<String, GenericRecord> outputTopic;
 
-        static final String inputTopicName = "logistics_data_partial";  // not the same topic as the main tests
-        static final String outputTopicName = "logistics_data_delivered";
+        static final String inputTopicName = "input_topic";
+        static final String outputTopicName = "output_topic";
 
         static AvroSchema avroSchema;
 
@@ -76,7 +76,7 @@ class AnomalyDetectorAppTests {
         static void setup() {
             SetupProperties.setProperties(inputTopicName, outputTopicName, "intField", 10, 20);
 
-            Properties config = Config.getConfig("input_topic", "output_topic");
+            Properties config = Config.getConfig();
             Map<String, String> serdeConfig = Config.getSerdeConfig(config);
 
             registerSchema();
@@ -101,6 +101,7 @@ class AnomalyDetectorAppTests {
         void testMessageWithValueTooSmallIsCopied() {
             GenericRecord inputValue = new GenericData.Record(avroSchema.rawSchema());
             inputValue.put("intField", 5);
+            inputTopic.pipeInput("key", inputValue);
 
             KeyValue outputRecord = outputTopic.readKeyValue();
 
@@ -113,6 +114,7 @@ class AnomalyDetectorAppTests {
         void testMessageWithValueTooBigIsCopied() {
             GenericRecord inputValue = new GenericData.Record(avroSchema.rawSchema());
             inputValue.put("intField", 25);
+            inputTopic.pipeInput("key", inputValue);
 
             KeyValue outputRecord = outputTopic.readKeyValue();
 
@@ -124,7 +126,8 @@ class AnomalyDetectorAppTests {
         @DisplayName("Test a message with value in range is not copied")
         void testMessageWithValueInRangeIsNotCopied() {
             GenericRecord inputValue = new GenericData.Record(avroSchema.rawSchema());
-            inputValue.put("intField", 55);
+            inputValue.put("intField", 15);
+            inputTopic.pipeInput("key", inputValue);
 
             assertTrue(outputTopic.isEmpty(), "In-range message does not come through");
         }
