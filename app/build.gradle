@@ -1,0 +1,97 @@
+plugins {
+    // The application plugin aids with building a CLI application in Java.
+    id 'application'
+    // This seems to be the standard Avro schema plugin, even though it's
+    // no longer actively maintained
+    id 'com.github.davidmc24.gradle.plugin.avro' version '1.9.1'
+}
+
+repositories {
+    // Use Maven Central for resolving general dependencies.
+    mavenCentral()
+    // Add Confluent dependencies for Schema Registry client and Avro Serdes
+    maven {
+        url = "https://packages.confluent.io/maven/"
+    }
+}
+
+// We're targeting Java 21 as a "safe" choice
+java {
+    toolchain {
+        languageVersion = JavaLanguageVersion.of(21)
+    }
+}
+
+dependencies {
+    implementation 'org.apache.kafka:kafka-streams:4.1.1'
+
+    // Read / write Confluent-style Avro values
+    implementation 'io.confluent:kafka-streams-avro-serde:8.1.1'            // same version as kafka-json-schema-serializer
+
+    // Avro dependency (for generated classes)
+    implementation 'org.apache.avro:avro:1.12.1'
+
+    // Logging
+    implementation 'org.slf4j:slf4j-api:2.0.13'
+    implementation 'org.slf4j:slf4j-simple:2.0.13'
+
+    // Use JUnit Jupiter for testing.
+    testImplementation('org.junit.jupiter:junit-jupiter:6.0.1')             // 6.0.1 seems to be the latest version
+    testRuntimeOnly 'org.junit.platform:junit-platform-launcher'
+
+    // Test dependencies
+    testImplementation 'uk.org.webcompere:system-stubs-jupiter:2.1.8'
+    testImplementation 'org.apache.kafka:kafka-streams-test-utils:4.1.1'
+    testImplementation 'io.confluent:kafka-json-schema-serializer:8.0.3'    // same version as kafka-streams-avro-serde
+}
+
+// Indicate where our Avro .avsc file is to be found (the default is "src/main/avro")
+sourceSets {
+    main {
+        resources {
+            srcDirs 'app/src/main/avro'
+        }
+    }
+}
+
+// Set the default application, which will be run by `./gradlew run`
+application {
+    // Define the main class for the application.
+    mainClass = 'org.example.AnomalyDetectorApp'
+}
+
+// It's quite useful to get slightly better warning messages from the compiler
+tasks.withType(JavaCompile) {
+    options.compilerArgs += ['-Xlint:unchecked']
+}
+
+tasks.named('test') {
+    // Use JUnit Platform for unit tests.
+    useJUnitPlatform()
+    // See https://docs.gradle.org/current/javadoc/org/gradle/api/tasks/testing/logging/TestLoggingContainer.html
+    // for the documentation for `testLogging`
+    testLogging {
+        events "passed", "skipped", "failed"
+        // A more complete list would be:
+        //events "failed", "passed", "skipped", "standardError","standardOut", "started"
+    }
+}
+
+tasks.register('AnomalyDetectorAppUberJar', Jar) {
+    archiveClassifier = 'uber'
+
+    manifest {
+        attributes 'Main-Class': 'org.example.AnomalyDetectorApp'
+    }
+
+    archiveBaseName = 'AnomalyDetectorApp'
+
+    from sourceSets.main.output
+
+    duplicatesStrategy = DuplicatesStrategy.EXCLUDE
+
+    dependsOn configurations.runtimeClasspath
+    from {
+        configurations.runtimeClasspath.findAll { it.name.endsWith('jar') }.collect { zipTree(it) }
+    }
+}

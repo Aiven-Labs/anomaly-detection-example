@@ -1,0 +1,27 @@
+# Ignore Gradle project-specific cache directory
+.gradle
+
+# Ignore Gradle build output directory
+build
+
+# Other built stuff
+app/libs/
+
+# Any certificates directory from testing
+certs/
+
+# When testing, I copy JAR files into the root directory to run them
+# via run.sh
+*.jar
+
+# Python virtual environment
+venv/
+
+# Temporary files :)
+temp*
+temp/
+test.*
+*.log
+
+# Other Python stuff
+__pycache__/
