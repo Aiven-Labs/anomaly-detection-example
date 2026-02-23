@@ -1,6 +1,9 @@
 package org.example;
 
 import io.confluent.kafka.streams.serdes.avro.GenericAvroSerde;
+import org.apache.avro.Schema;
+import org.apache.avro.Schema.Field;
+import org.apache.avro.LogicalType;
 import org.apache.avro.generic.GenericRecord;
 import org.apache.kafka.common.serialization.Serde;
 import org.apache.kafka.common.serialization.Serdes;
@@ -26,23 +29,43 @@ public class AnomalyDetectorApp {
 
     /** Is the name field in this value outside the bounds given?
      *
+     * For the moment, the min and max bounds are always int values, but the field can be an int or a long
+     *
      * We also decide that if the field is `null` then it counts as out of bounds.
      */
-    private static boolean outsideBounds(GenericRecord value, String fieldName, int minBound, int maxBound) {
+    private static boolean outsideBounds(GenericRecord value, String fieldName, Object minBound, Object maxBound) {
 
-        // PLAYING WITH INTROSPECTION
-        /* Schema */ var schema = value.getSchema();
-        /* Schema.Field */ var field = schema.getField(fieldName);
-        /* Schema */ var fieldSchema = field.schema();
-        /* Schema.Type */ var fieldType = fieldSchema.getType();
-        /* LogicalType */ var fieldLogicalType = fieldSchema.getLogicalType();
+        // USING INTROSPECTION TO SHOW THE TYPE OF A FIELD
+        Schema  schema = value.getSchema();
+        Schema.Field  field = schema.getField(fieldName);
+        Schema fieldSchema = field.schema();
+        Schema.Type fieldType = fieldSchema.getType();
+        LogicalType fieldLogicalType = fieldSchema.getLogicalType();
         log.info("Field {} is type {}, logical type {}", fieldName, fieldType, fieldLogicalType);
-        // DONE PLAYING
+        // DONE
 
         var val = value.get(fieldName);
-        if (val instanceof Integer num) {
-            return num < minBound || num > maxBound;
+        if (val == null) {
+            log.info("The value for field {fieldName} is null, so is not comparable");
+            return true;
+        }
+
+        if (fieldType == Schema.Type.INT) {
+            if (val instanceof Integer num) {
+                return num < (int) minBound || num > (int) maxBound;
+            } else {
+                log.info("The value for field {fieldName} is not an Integer, so is not comparable");
+                return true;
+            }
+        } else if (fieldType == Schema.Type.LONG){
+            if (val instanceof Long num) {
+                return num < (int) minBound || num > (int) maxBound;  // Bounds are still `int`s
+            } else {
+                log.info("The value for field {fieldName} is not a Long, so is not comparable");
+                return true;
+            }
         } else {
+            log.info("Field {fieldName} is not an Avro INT or LONG, so is not comparable");
             return true;
         }
     }
@@ -77,7 +100,7 @@ public class AnomalyDetectorApp {
         sourceStream
                 .peek( (String key, GenericRecord inputValue) -> log.info("LOOKING AT: Value='{}'", inputValue) )
                 .filter( (String key, GenericRecord inputValue) -> outsideBounds(inputValue,
-                        config.get("field.name").toString(), (int) config.get("min.bound"), (int) config.get("max.bound")) )
+                        config.get("field.name").toString(), config.get("min.bound"), config.get("max.bound")) )
                 .peek( ( String key, GenericRecord inputValue) -> log.info("OUT OF BOUNDS: Value='{}' not {} <= {} <= {}",
                         inputValue, config.get("min.bound"), config.get("field.name"), config.get("max.bound")) )
                 .to(

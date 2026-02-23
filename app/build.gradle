@@ -72,9 +72,9 @@ tasks.named('test') {
     // for the documentation for `testLogging`
     testLogging {
 	// Basic list
-        //events "passed", "skipped", "failed"
+        events "passed", "skipped", "failed"
 	// Basic list plus log.info messages
-        events "failed", "passed", "skipped", "standardError"
+        //events "failed", "passed", "skipped", "standardError", "standardOut"
         // An even more complete list would be:
         //events "failed", "passed", "skipped", "standardError","standardOut", "started"
     }
