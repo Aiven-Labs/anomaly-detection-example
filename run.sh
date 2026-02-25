@@ -13,6 +13,11 @@
 # - INPUT_TOPIC - the input topic name
 # - OUTPUT_TOPIC - the output topic name
 #
+# We also need the details of the anomaly we're trying to detect
+# - FIELD_NAME is the name of the field in the Avro message
+# - MIN_BOUND is the integer value that is the lowest "OK" value
+# - MAX_BOUND is the integer value that is the highest "OK" value
+#
 # If you give a value for SCHEMA_REGISTRY_USERNAME we'll use it, otherwise
 # we'll use the default value, which is "avnadmin"
 export SCHEMA_REGISTRY_USERNAME=${SCHEMA_REGISTRY_USERNAME:-"avnadmin"}
@@ -40,6 +45,9 @@ exec java \
     -DSCHEMA_REGISTRY_PASSWORD="$SCHEMA_REGISTRY_PASSWORD"     \
     -DINPUT_TOPIC="$INPUT_TOPIC"                               \
     -DOUTPUT_TOPIC="$OUTPUT_TOPIC"                             \
+    -DFIELD_NAME="$FIELD_NAME"				       \
+    -DMIN_BOUND="$MIN_BOUND"				       \
+    -DMAX_BOUND="$MAX_BOUND"				       \
     -DEXACTLY_ONCE="$EXACTLY_ONCE"                             \
     -jar ./${APP_NAME}-uber.jar \
     com.example.${APP_NAME} "$@"
