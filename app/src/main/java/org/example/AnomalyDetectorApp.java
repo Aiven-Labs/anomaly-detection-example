@@ -33,7 +33,7 @@ public class AnomalyDetectorApp {
      *
      * We also decide that if the field is `null` then it counts as out of bounds.
      */
-    private static boolean outsideBounds(GenericRecord value, String fieldName, Object minBound, Object maxBound) {
+    private static boolean outsideBounds(GenericRecord value, String fieldName, int minBound, int maxBound) {
 
         // USING INTROSPECTION TO SHOW THE TYPE OF A FIELD
         Schema  schema = value.getSchema();
@@ -46,28 +46,41 @@ public class AnomalyDetectorApp {
 
         var val = value.get(fieldName);
         if (val == null) {
-            log.info("The value for field {fieldName} is null, so is not comparable");
+            log.info("The value for field {} is null, so is not comparable", fieldName);
             return true;
         }
 
         if (fieldType == Schema.Type.INT) {
             if (val instanceof Integer num) {
-                return num < (int) minBound || num > (int) maxBound;
+                if (num < minBound) {
+                    log.info("Field {} value {} < {}", fieldName, num, minBound);
+                    return true;
+                } else if (num > maxBound) {
+                    log.info("Field {} value {} > {}", fieldName, num, maxBound);
+                    return true;
+                }
             } else {
-                log.info("The value for field {fieldName} is not an Integer, so is not comparable");
+                log.info("The value for field {} is not an Integer, so is not comparable", fieldName);
                 return true;
             }
         } else if (fieldType == Schema.Type.LONG){
             if (val instanceof Long num) {
-                return num < (int) minBound || num > (int) maxBound;  // Bounds are still `int`s
+                if (num < Long.valueOf(minBound)) {
+                    log.info("Field {} value {} < {}", fieldName, num, minBound);
+                    return true;
+                } else if (num > Long.valueOf(maxBound)) {
+                    log.info("Field {} value {} > {}", fieldName, num, maxBound);
+                    return true;
+                }
             } else {
-                log.info("The value for field {fieldName} is not a Long, so is not comparable");
+                log.info("The value for field {} is not a Long, so is not comparable", fieldName);
                 return true;
             }
         } else {
-            log.info("Field {fieldName} is not an Avro INT or LONG, so is not comparable");
+            log.info("Field {} is not an Avro INT or LONG, so is not comparable", fieldName);
             return true;
         }
+        return false;
     }
 
     public static Topology buildTopology(Properties config, Map<String, String> serdeConfig)
@@ -100,7 +113,7 @@ public class AnomalyDetectorApp {
         sourceStream
                 .peek( (String key, GenericRecord inputValue) -> log.info("LOOKING AT: Value='{}'", inputValue) )
                 .filter( (String key, GenericRecord inputValue) -> outsideBounds(inputValue,
-                        config.get("field.name").toString(), config.get("min.bound"), config.get("max.bound")) )
+                        config.get("field.name").toString(), (int) config.get("min.bound"), (int) config.get("max.bound")) )
                 .peek( ( String key, GenericRecord inputValue) -> log.info("OUT OF BOUNDS: Value='{}' not {} <= {} <= {}",
                         inputValue, config.get("min.bound"), config.get("field.name"), config.get("max.bound")) )
                 .to(

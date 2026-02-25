@@ -133,30 +133,50 @@ Set an environment variable to the content of each certificate file.
 >    source prep.fish
 >    ```
 
-1. To build a container image for the default `GenericLogApp`:
+Build the container image:
 
-    ```shell
-    docker build -t appimage .
-    ```
+```shell
+docker build -t appimage .
+```
 
-2. To build a container image for a specific app (for instance, 
-   `GenericFilterApp`):
-    ```shell
-    docker build --build-arg APP_NAME=GenericFilterApp -t appimage .
-    ```
 
-Run the container image:
+Run the container image - for instance
 ```shell
 docker run -d --name kafka-streams-container -p 3000:3000 \
-        -e KAFKA_SERVICE_URI=$KAFKA_SERVICE_URI \
-        -e CA_PEM_CONTENTS="$CA_PEM_CONTENTS" \
-        -e SERVICE_CERT_CONTENTS="$SERVICE_CERT_CONTENTS" \
-        -e SERVICE_KEY_CONTENTS="$SERVICE_KEY_CONTENTS" \
-        -e SCHEMA_REGISTRY_URL=$SCHEMA_REGISTRY_URL \
-        -e SCHEMA_REGISTRY_USERNAME=$SCHEMA_REGISTRY_USERNAME \ 
-        -e SCHEMA_REGISTRY_PASSWORD=$SCHEMA_REGISTRY_PASSWORD \
-        -e EXACTLY_ONCE=false \
+              -e KAFKA_SERVICE_URI=$KAFKA_SERVICE_URI \
+              -e CA_PEM_CONTENTS="$CA_PEM_CONTENTS" \
+              -e SERVICE_CERT_CONTENTS="$SERVICE_CERT_CONTENTS" \
+              -e SERVICE_KEY_CONTENTS="$SERVICE_KEY_CONTENTS" \
+              -e SCHEMA_REGISTRY_URL=$SCHEMA_REGISTRY_URL \
+              -e SCHEMA_REGISTRY_USERNAME=$SCHEMA_REGISTRY_USERNAME \
+              -e SCHEMA_REGISTRY_PASSWORD=$SCHEMA_REGISTRY_PASSWORD \
+              -e INPUT_TOPIC=$INPUT_TOPIC \
+              -e OUTPUT_TOPIC=$OUTPUT_TOPIC \
+              -e FIELD_NAME=temperature \
+              -e MIN_BOUND=-50 \
+              -e MAX_BOUND=-20 \
+              -e EXACTLY_ONCE=false \
+              appimage
         appimage
+```
+
+...or if you have environment variables for the field name and bounds:
+```shell
+docker run -d --name kafka-streams-container -p 3000:3000 \
+              -e KAFKA_SERVICE_URI=$KAFKA_SERVICE_URI \
+              -e CA_PEM_CONTENTS="$CA_PEM_CONTENTS" \
+              -e SERVICE_CERT_CONTENTS="$SERVICE_CERT_CONTENTS" \
+              -e SERVICE_KEY_CONTENTS="$SERVICE_KEY_CONTENTS" \
+              -e SCHEMA_REGISTRY_URL=$SCHEMA_REGISTRY_URL \
+              -e SCHEMA_REGISTRY_USERNAME=$SCHEMA_REGISTRY_USERNAME \
+              -e SCHEMA_REGISTRY_PASSWORD=$SCHEMA_REGISTRY_PASSWORD \
+              -e INPUT_TOPIC=$INPUT_TOPIC \
+              -e OUTPUT_TOPIC=$OUTPUT_TOPIC \
+              -e FIELD_NAME=$FIELD_NAME \
+              -e MIN_BOUND=$MIN_BOUND \
+              -e MAX_BOUND=-$MAX_BOUND \
+              -e EXACTLY_ONCE=false \
+              appimage
 ```
 
 We don't actually use the port for anything at the moment.
