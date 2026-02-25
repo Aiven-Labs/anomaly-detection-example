@@ -25,6 +25,12 @@ import java.util.concurrent.CountDownLatch;
  * - Messages are Avro, as produced by the Aiven for Apache Kafka sample stream generator for ???
  */
 public class AnomalyDetectorApp {
+
+    // I do want to keep the code for reporting on the field types.
+    // But in normal usage we don't need those messages, so we'll assume
+    // that the compiler will optimise out any code conditionalised on a constant :)
+    private static final boolean REPORT_FIELD_TYPES = false;
+
     private static final Logger log = LoggerFactory.getLogger(AnomalyDetectorApp.class);
 
     /** Is the name field in this value outside the bounds given?
@@ -35,14 +41,16 @@ public class AnomalyDetectorApp {
      */
     private static boolean outsideBounds(GenericRecord value, String fieldName, int minBound, int maxBound) {
 
-        // USING INTROSPECTION TO SHOW THE TYPE OF A FIELD
-        Schema  schema = value.getSchema();
-        Schema.Field  field = schema.getField(fieldName);
+        Schema schema = value.getSchema();
+        Schema.Field field = schema.getField(fieldName);
         Schema fieldSchema = field.schema();
         Schema.Type fieldType = fieldSchema.getType();
-        LogicalType fieldLogicalType = fieldSchema.getLogicalType();
-        log.info("Field {} is type {}, logical type {}", fieldName, fieldType, fieldLogicalType);
-        // DONE
+
+        if (REPORT_FIELD_TYPES) {
+            // It's useful to know how to find out about the Avro field via introspection
+            LogicalType fieldLogicalType = fieldSchema.getLogicalType();
+            log.info("Field {} is type {}, logical type {}", fieldName, fieldType, fieldLogicalType);
+        }
 
         var val = value.get(fieldName);
         if (val == null) {
@@ -114,8 +122,6 @@ public class AnomalyDetectorApp {
                 .peek( (String key, GenericRecord inputValue) -> log.info("LOOKING AT: Value='{}'", inputValue) )
                 .filter( (String key, GenericRecord inputValue) -> outsideBounds(inputValue,
                         config.get("field.name").toString(), (int) config.get("min.bound"), (int) config.get("max.bound")) )
-                .peek( ( String key, GenericRecord inputValue) -> log.info("OUT OF BOUNDS: Value='{}' not {} <= {} <= {}",
-                        inputValue, config.get("min.bound"), config.get("field.name"), config.get("max.bound")) )
                 .to(
                         config.get("output.topic.name").toString(),
                         Produced.with(Serdes.String(), avroMessageSerde)

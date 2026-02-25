@@ -154,7 +154,7 @@ docker run -d --name kafka-streams-container -p 3000:3000 \
               -e OUTPUT_TOPIC=$OUTPUT_TOPIC \
               -e FIELD_NAME=temperature \
               -e MIN_BOUND=-50 \
-              -e MAX_BOUND=-20 \
+              -e MAX_BOUND=-30 \
               -e EXACTLY_ONCE=false \
               appimage
         appimage
