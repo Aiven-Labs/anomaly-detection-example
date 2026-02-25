@@ -1,3 +1,11 @@
+# --- Set ARG values for use in the following build stages
+# We use this value to specify which app we're building
+# You can override this at the `docker build` command line
+# with `--build-arg APP_NAME=<different name>`
+# (see https://docs.docker.com/build/building/variables/#env-usage-example)
+# although in our case we probably don't need to be able to do this.
+ARG APP_NAME="AnomalyDetectorApp"
+
 # --- First stage: Get our app, work out its dependencies, create a JRE
 FROM gradle:9.3.0-jdk25-noble AS builder
 # See https://hub.docker.com/_/gradle for available images
@@ -5,6 +13,10 @@ FROM gradle:9.3.0-jdk25-noble AS builder
 #    eclipse-temurin:21-jdk-jammy AS builder
 
 WORKDIR /app
+
+# ARG values do not persist over FROM boundaries
+# We need to explicitly reference it again to make it available
+ARG APP_NAME
 
 ENV APP_NAME="AnomalyDetectorApp"
 
@@ -65,6 +77,14 @@ RUN apt-get autoremove -y \
     && apt-get clean -y \
     && apt-get autoclean -y \
     && rm -rf /var/lib/apt/lists/*
+
+# We want to get our APP_NAME into 'run.sh'm but ARG values are not persisted
+# into the run time (that is, our `run.sh`)
+# So first get the ARG value as we did in the first stage
+# (remmeber, ARG values don't persist over FROM)
+ARG APP_NAME
+# And then set an ENV value to that value
+ENV APP_NAME=$APP_NAME
 
 # Copy the custom JRE and application artifacts from the builder stage
 COPY --from=builder /app/custom-jre /usr/lib/jvm/custom-jre
