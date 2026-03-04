@@ -2,7 +2,7 @@
 
 # We're going to need the following environment variables as input
 #
-# - KAFKA_SERVICE_URI - the URI of the Kafka service we're using
+# - KAFKA_SERVICE_URL - the URL of the Kafka service we're using
 # - CA_PEM_CONTENTS - the contents of the ca.pem file
 # - SERVICE_CERT_CONTENTS - the contents of the service.cert file
 # - SERVICE_KEY_CONTENTS - the contents of the service.key file
@@ -36,7 +36,7 @@ echo "APP_NAME is $APP_NAME"
 echo "RUN THE PROGRAM"
 exec java \
     -cp '$JAVA_HOME/lib/*' \
-    -DKAFKA_SERVICE_URI="$KAFKA_SERVICE_URI"                   \
+    -DKAFKA_SERVICE_URL="$KAFKA_SERVICE_URL"                   \
     -DCA_PEM_CONTENTS="$CA_PEM_CONTENTS"		       \
     -DSERVICE_CERT_CONTENTS="$SERVICE_CERT_CONTENTS"           \
     -DSERVICE_KEY_CONTENTS="$SERVICE_KEY_CONTENTS"             \

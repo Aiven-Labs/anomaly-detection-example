@@ -43,7 +43,7 @@ public class Config {
     public static Properties getConfig() {
         // We put them all into one configuration, even though they really fall into four groups
         // Kafka access
-        String kafkaServiceUri = System.getProperty("KAFKA_SERVICE_URI");
+        String kafkaServiceUri = System.getProperty("KAFKA_SERVICE_URL");
         String caPemContents = System.getProperty("CA_PEM_CONTENTS");
         String serviceCertContents = System.getProperty("SERVICE_CERT_CONTENTS");
         String serviceKeyContents = System.getProperty("SERVICE_KEY_CONTENTS");
@@ -76,7 +76,7 @@ public class Config {
         boolean giveUp = false;
 
         if (isNullOrEmpty(kafkaServiceUri)) {
-            log.error("Missing value for -DKAFKA_SERVICE_URI");
+            log.error("Missing value for -DKAFKA_SERVICE_URL");
             giveUp = true;
         }
         if (isNullOrEmpty(caPemContents)) {

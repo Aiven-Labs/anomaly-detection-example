@@ -50,7 +50,7 @@ logging.getLogger('kafka').setLevel(logging.WARNING)
 # Command line default values
 DEFAULT_NUM_MESSAGES = 500
 DEFAULT_CERTS_FOLDER = "certs"
-KAFKA_SERVICE_URI = os.getenv("KAFKA_SERVICE_URI")
+KAFKA_SERVICE_URL = os.getenv("KAFKA_SERVICE_URL")
 SCHEMA_REGISTRY_URL = os.getenv("SCHEMA_REGISTRY_URL")
 # Because we're writing to the INPUT_TOPIC for the anomaly detector app,
 # that's the environment value we look for (yes, that is a bit confusing)
@@ -196,8 +196,8 @@ def send_messages_to_kafka(
 def main():
     parser = argparse.ArgumentParser()
     parser.add_argument(
-        '-k', '--kafka-uri', default=KAFKA_SERVICE_URI,
-        help='the URI for the Kafka service, defaulting to $KAFKA_SERVICE_URI'
+        '-k', '--kafka-uri', default=KAFKA_SERVICE_URL,
+        help='the URL for the Kafka service, defaulting to $KAFKA_SERVICE_URL'
         ' if that is set',
     )
     parser.add_argument(
@@ -228,8 +228,8 @@ def main():
     args = parser.parse_args()
 
     if not args.kafka_uri:
-        logging.error('The URI for the Kafka service is required')
-        logging.error('Set KAFKA_SERVICE_URI or use the -k switch')
+        logging.error('The URL for the Kafka service is required')
+        logging.error('Set KAFKA_SERVICE_URL or use the -k switch')
         return -1
 
     if not args.schema_registry_url:
@@ -246,7 +246,7 @@ def main():
         args.num_messages = sys.maxsize
 
     logging.debug('Reading messages')
-    logging.debug(f'Kafka service URI {args.kafka_uri}')
+    logging.debug(f'Kafka service URL {args.kafka_uri}')
     logging.debug(f'Certificates in {args.certs_dir}')
     logging.debug(f'Schema registry URL {args.schema_registry_url}')
     logging.debug(f'Writing to topic {args.topic_name}')

@@ -6,7 +6,7 @@ public class SetupProperties {
      */
     static void setProperties(String inputTopicName, String outputTopicName,
                               String fieldName, int minBound, int maxBound) {
-        System.setProperty("KAFKA_SERVICE_URI", "dummy:1234");
+        System.setProperty("KAFKA_SERVICE_URL", "dummy:1234");
         System.setProperty("CA_PEM_CONTENTS", "not used");
         System.setProperty("SERVICE_CERT_CONTENTS", "not used");
         System.setProperty("SERVICE_KEY_CONTENTS", "not used");

@@ -73,7 +73,7 @@ if set -ql _flag_c
 end
 
 echo "Getting Kafka and Karapace details"
-set -x KAFKA_SERVICE_URI (avn service get $KAFKA_SERVICE_NAME --format '{service_uri}')
+set -x KAFKA_SERVICE_URL (avn service get $KAFKA_SERVICE_NAME --format '{service_uri}')
 set -x SCHEMA_REGISTRY_URL (avn service get $KAFKA_SERVICE_NAME --json | jq -r '.connection_info.schema_registry_uri')
 set -x SCHEMA_REGISTRY_PASSWORD (avn service get $KAFKA_SERVICE_NAME --json | jq -r '.users[0].password')
 set -x SCHEMA_REGISTRY_USERNAME (avn service get $KAFKA_SERVICE_NAME --json | jq -r '.users[0].username')

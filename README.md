@@ -39,15 +39,15 @@ The project uses Gradle and Groovy for configuration and building.
 
 ## Running the container
 
-Download the URI and the certificates for the Kafka service.
+Download the URL and the certificates for the Kafka service.
 
-Set an environment variable for the Kafka service URI - something like
+Set an environment variable for the Kafka service URL - something like
 ```shell
-export KAFKA_SERVICE_URI=<service uri>
+export KAFKA_SERVICE_URL=<service uri>
 ```
 or in the Fish shell
 ```shell
-set -x KAFKA_SERVICE_URI <service uri>
+set -x KAFKA_SERVICE_URL <service uri>
 ```
 
 Do the same for the schema registry URL and password (the program
@@ -89,7 +89,7 @@ docker build -t appimage .
 Run the container image - for instance
 ```shell
 docker run -d --name kafka-streams-container -p 3000:3000 \
-              -e KAFKA_SERVICE_URI=$KAFKA_SERVICE_URI \
+              -e KAFKA_SERVICE_URL=$KAFKA_SERVICE_URL \
               -e CA_PEM_CONTENTS="$CA_PEM_CONTENTS" \
               -e SERVICE_CERT_CONTENTS="$SERVICE_CERT_CONTENTS" \
               -e SERVICE_KEY_CONTENTS="$SERVICE_KEY_CONTENTS" \
@@ -110,7 +110,7 @@ docker run -d --name kafka-streams-container -p 3000:3000 \
 and the bounds:
 ```shell
 docker run -d --name kafka-streams-container -p 3000:3000 \
-              -e KAFKA_SERVICE_URI=$KAFKA_SERVICE_URI \
+              -e KAFKA_SERVICE_URL=$KAFKA_SERVICE_URL \
               -e CA_PEM_CONTENTS="$CA_PEM_CONTENTS" \
               -e SERVICE_CERT_CONTENTS="$SERVICE_CERT_CONTENTS" \
               -e SERVICE_KEY_CONTENTS="$SERVICE_KEY_CONTENTS" \
@@ -141,7 +141,7 @@ All variants of the Java app take the following arguments (of course
 [Config.java](app/src/main/java/org/example/Config.java). The names chosen 
 match the environment variables used by the container file and `run.sh`.
 
-* `-DKAFKA_SERVICE_URI` - the URI for the Kafka service.
+* `-DKAFKA_SERVICE_URL` - the URL for the Kafka service.
 * `-DCA_PEM_CONTENTS` - the contents of the `ca.pem` file
 * `-DSERVICE_CERT_CONTENTS` - the contents of the `service.cert` file
 * `-DSERVICE_KEY_CONTENTS` - the contents of the `service.key` file
@@ -194,7 +194,7 @@ The `run.sh` file expects the following environment variables as input
 you'll recognise all but `APP_NAME` from the instructions on running the 
 container and the Java app itself):
 
-- `KAFKA_SERVICE_URI` - the URI of the Kafka service we're using
+- `KAFKA_SERVICE_URL` - the URL of the Kafka service we're using
 - `CA_PEM_CONTENTS` - the contents of the `ca.pem` file
 - `SERVICE_CERT_CONTENTS` - the contents of the `service.cert` file
 - `SERVICE_KEY_CONTENTS` - the contents of the `service.key` file
@@ -352,7 +352,7 @@ docker build -t report_image .
 
 ```shell
 docker run -d --name report-messages-container -p 3000:3000 \
-        -e KAFKA_SERVICE_URI=$KAFKA_SERVICE_URI \
+        -e KAFKA_SERVICE_URL=$KAFKA_SERVICE_URL \
         -e CA_PEM_CONTENTS=$CA_PEM_CONTENTS \
         -e SERVICE_CERT_CONTENTS=$SERVICE_CERT_CONTENTS \
         -e SERVICE_KEY_CONTENTS=$SERVICE_KEY_CONTENTS \
@@ -479,13 +479,13 @@ service. There are notes about each command after the command.
    >    specify th
    > 3. The last two switches are the same as in the free example above.
 
-While that's running, get the service URI for the new service
+While that's running, get the service URL for the new service
 ``` shell
-export KAFKA_SERVICE_URI=$(avn service get $KAFKA_SERVICE_NAME --format '{service_uri}')
+export KAFKA_SERVICE_URL=$(avn service get $KAFKA_SERVICE_NAME --format '{service_uri}')
 ```
 or for Fish shell
 ```shell
-set -x KAFKA_SERVICE_URI (avn service get $KAFKA_SERVICE_NAME --format '{service_uri}')
+set -x KAFKA_SERVICE_URL (avn service get $KAFKA_SERVICE_NAME --format '{service_uri}')
 ```
 
 Get the schema registry (Karapace) URL
