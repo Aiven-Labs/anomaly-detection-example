@@ -192,7 +192,8 @@ finally runs the `run.sh` script.
 
 The `run.sh` file expects the following environment variables as input 
 you'll recognise all but `APP_NAME` from the instructions on running the 
-container and the Java app itself):
+container and the Java app itself). The "For instance" examples work if you're
+using the `produce_avro.py` script to produce sample data.
 
 - `KAFKA_BOOTSTRAP_SERVERS` - the URL of the Kafka service we're using
 - `KAFKA_CA_CERT` - the contents of the `ca.pem` file
@@ -205,12 +206,12 @@ container and the Java app itself):
 - `SCHEMA_REGISTRY_PASSWORD` - the password for accessing the schema registry
 - `INPUT_TOPIC` - the input topic name.
   has a sensible default, `metric_data`.
-- `OUTPUT_TOPIC` - the output topic name, for anomalous messages.
-* `FIELD_NAME` - the name of the field to check in the message value.
+- `OUTPUT_TOPIC` - the output topic name, for anomalous messages. For instance, `anomaly_data`.
+* `FIELD_NAME` - the name of the field to check in the message value. For instance, `temperature`.
 * `MIN_BOUND` - the minimum `int` value for that field - any messages with
-  a value below this are anomalous.
+  a value below this are anomalous. For instance, `-50`.
 * `MAX_BOUND` - the maximum `int` value for that field - any messages with
-  a value above this are anomalous.
+  a value above this are anomalous. For instance, `-30`
 - `EXACTLY_ONCE` - whether exactly once semantics is wanted. **This is 
   optional** and if it is not given, defaults to `false`. Request `true` if
   you want exactly once semantics.
