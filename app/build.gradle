@@ -15,10 +15,9 @@ repositories {
     }
 }
 
-// We're targeting Java 21 as a "safe" choice
 java {
     toolchain {
-        languageVersion = JavaLanguageVersion.of(21)
+        languageVersion = JavaLanguageVersion.of(25)
     }
 }
 
