@@ -204,8 +204,7 @@ container and the Java app itself):
   will be assumed
 - `SCHEMA_REGISTRY_PASSWORD` - the password for accessing the schema registry
 - `INPUT_TOPIC` - the input topic name.
-  has a sensible default.
-  `logistics_data_gen`.
+  has a sensible default, `metric_data`.
 - `OUTPUT_TOPIC` - the output topic name, for anomalous messages.
 * `FIELD_NAME` - the name of the field to check in the message value.
 * `MIN_BOUND` - the minimum `int` value for that field - any messages with
