@@ -1,3 +1,3 @@
-export CA_PEM_CONTENTS "$(cat certs/ca.pem)"
-export SERVICE_CERT_CONTENTS "$(cat certs/service.cert)"
-export SERVICE_KEY_CONTENTS "$(cat certs/service.key)"
+export KAFKA_CA_CERT "$(cat certs/ca.pem)"
+export KAFKA_ACCESS_CERT "$(cat certs/service.cert)"
+export KAFKA_ACCESS_KEY "$(cat certs/service.key)"

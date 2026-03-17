@@ -43,10 +43,10 @@ public class Config {
     public static Properties getConfig() {
         // We put them all into one configuration, even though they really fall into four groups
         // Kafka access
-        String kafkaServiceUri = System.getProperty("KAFKA_SERVICE_URL");
-        String caPemContents = System.getProperty("CA_PEM_CONTENTS");
-        String serviceCertContents = System.getProperty("SERVICE_CERT_CONTENTS");
-        String serviceKeyContents = System.getProperty("SERVICE_KEY_CONTENTS");
+        String kafkaServiceUri = System.getProperty("KAFKA_BOOTSTRAP_SERVERS");
+        String caPemContents = System.getProperty("KAFKA_CA_CERT");
+        String serviceCertContents = System.getProperty("KAFKA_ACCESS_CERT");
+        String serviceKeyContents = System.getProperty("KAFKA_ACCESS_KEY");
         String schemaRegistryUrl = System.getProperty("SCHEMA_REGISTRY_URL");
         // Schema repository access
         String schemaRegistryUserName = System.getProperty("SCHEMA_REGISTRY_USERNAME");
@@ -76,19 +76,19 @@ public class Config {
         boolean giveUp = false;
 
         if (isNullOrEmpty(kafkaServiceUri)) {
-            log.error("Missing value for -DKAFKA_SERVICE_URL");
+            log.error("Missing value for -DKAFKA_BOOTSTRAP_SERVERS");
             giveUp = true;
         }
         if (isNullOrEmpty(caPemContents)) {
-            log.error("Missing value for -DCA_PEM_CONTENTS");
+            log.error("Missing value for -DKAFKA_CA_CERT");
             giveUp = true;
         }
         if (isNullOrEmpty(serviceCertContents)) {
-            log.error("Missing value for -DSERVICE_CERT_CONTENTS");
+            log.error("Missing value for -DKAFKA_ACCESS_CERT");
             giveUp = true;
         }
         if (isNullOrEmpty(serviceKeyContents)) {
-            log.error("Missing value for -DSERVICE_KEY_CONTENTS");
+            log.error("Missing value for -DKAFKA_ACCESS_KEY");
             giveUp = true;
         }
         if (isNullOrEmpty(schemaRegistryUrl)) {

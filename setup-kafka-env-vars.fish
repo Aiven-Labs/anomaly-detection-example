@@ -73,7 +73,7 @@ if set -ql _flag_c
 end
 
 echo "Getting Kafka and Karapace details"
-set -x KAFKA_SERVICE_URL (avn service get $KAFKA_SERVICE_NAME --format '{service_uri}')
+set -x KAFKA_BOOTSTRAP_SERVERS (avn service get $KAFKA_SERVICE_NAME --format '{service_uri}')
 set -x SCHEMA_REGISTRY_URL (avn service get $KAFKA_SERVICE_NAME --json | jq -r '.connection_info.schema_registry_uri')
 set -x SCHEMA_REGISTRY_PASSWORD (avn service get $KAFKA_SERVICE_NAME --json | jq -r '.users[0].password')
 set -x SCHEMA_REGISTRY_USERNAME (avn service get $KAFKA_SERVICE_NAME --json | jq -r '.users[0].username')
@@ -85,6 +85,6 @@ avn service user-creds-download $KAFKA_SERVICE_NAME --username avnadmin -d certs
 
 echo "And setting the credential environment variables"
 # See https://github.com/fish-shell/fish-shell/issues/7323 for the `string collect` hint
-set -x CA_PEM_CONTENTS (cat certs/ca.pem | string collect)
-set -x SERVICE_CERT_CONTENTS (cat certs/service.cert | string collect)
-set -x SERVICE_KEY_CONTENTS (cat certs/service.key | string collect)
+set -x KAFKA_CA_CERT (cat certs/ca.pem | string collect)
+set -x KAFKA_ACCESS_CERT (cat certs/service.cert | string collect)
+set -x KAFKA_ACCESS_KEY (cat certs/service.key | string collect)

@@ -11,9 +11,9 @@
 
 # We're going to need the following environment variables as input
 #
-# - CA_PEM_CONTENTS - the contents of the ca.pem file
-# - SERVICE_CERT_CONTENTS - the contents of the service.cert file
-# - SERVICE_KEY_CONTENTS - the contents of the service.key file
+# - KAFKA_CA_CERT - the contents of the ca.pem file
+# - KAFKA_ACCESS_CERT - the contents of the service.cert file
+# - KAFKA_ACCESS_KEY - the contents of the service.key file
 
 echo "NORMALISE THE CERTIFICATE VALUES"
 
@@ -31,6 +31,6 @@ normalise_cert_to_file () {
   echo "$new_string"
 }
 
-CA_PEM_CONTENTS=$(normalise_cert_to_file "$CA_PEM_CONTENTS" "CERTIFICATE")
-SERVICE_CERT_CONTENTS=$(normalise_cert_to_file "$SERVICE_CERT_CONTENTS" "CERTIFICATE")
-SERVICE_KEY_CONTENS=$(normalise_cert_to_file "$SERVICE_KEY_CONTENTS" "PRIVATE KEY")
+KAFKA_CA_CERT=$(normalise_cert_to_file "$KAFKA_CA_CERT" "CERTIFICATE")
+KAFKA_ACCESS_CERT=$(normalise_cert_to_file "$KAFKA_ACCESS_CERT" "CERTIFICATE")
+SERVICE_KEY_CONTENS=$(normalise_cert_to_file "$KAFKA_ACCESS_KEY" "PRIVATE KEY")

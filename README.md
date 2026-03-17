@@ -43,11 +43,11 @@ Download the URL and the certificates for the Kafka service.
 
 Set an environment variable for the Kafka service URL - something like
 ```shell
-export KAFKA_SERVICE_URL=<service uri>
+export KAFKA_BOOTSTRAP_SERVERS=<service uri>
 ```
 or in the Fish shell
 ```shell
-set -x KAFKA_SERVICE_URL <service uri>
+set -x KAFKA_BOOTSTRAP_SERVERS <service uri>
 ```
 
 Do the same for the schema registry URL and password (the program
@@ -89,10 +89,10 @@ docker build -t appimage .
 Run the container image - for instance
 ```shell
 docker run -d --name kafka-streams-container -p 3000:3000 \
-              -e KAFKA_SERVICE_URL=$KAFKA_SERVICE_URL \
-              -e CA_PEM_CONTENTS="$CA_PEM_CONTENTS" \
-              -e SERVICE_CERT_CONTENTS="$SERVICE_CERT_CONTENTS" \
-              -e SERVICE_KEY_CONTENTS="$SERVICE_KEY_CONTENTS" \
+              -e KAFKA_BOOTSTRAP_SERVERS=$KAFKA_BOOTSTRAP_SERVERS \
+              -e KAFKA_CA_CERT="$KAFKA_CA_CERT" \
+              -e KAFKA_ACCESS_CERT="$KAFKA_ACCESS_CERT" \
+              -e KAFKA_ACCESS_KEY="$KAFKA_ACCESS_KEY" \
               -e SCHEMA_REGISTRY_URL=$SCHEMA_REGISTRY_URL \
               -e SCHEMA_REGISTRY_USERNAME=$SCHEMA_REGISTRY_USERNAME \
               -e SCHEMA_REGISTRY_PASSWORD=$SCHEMA_REGISTRY_PASSWORD \
@@ -110,10 +110,10 @@ docker run -d --name kafka-streams-container -p 3000:3000 \
 and the bounds:
 ```shell
 docker run -d --name kafka-streams-container -p 3000:3000 \
-              -e KAFKA_SERVICE_URL=$KAFKA_SERVICE_URL \
-              -e CA_PEM_CONTENTS="$CA_PEM_CONTENTS" \
-              -e SERVICE_CERT_CONTENTS="$SERVICE_CERT_CONTENTS" \
-              -e SERVICE_KEY_CONTENTS="$SERVICE_KEY_CONTENTS" \
+              -e KAFKA_BOOTSTRAP_SERVERS=$KAFKA_BOOTSTRAP_SERVERS \
+              -e KAFKA_CA_CERT="$KAFKA_CA_CERT" \
+              -e KAFKA_ACCESS_CERT="$KAFKA_ACCESS_CERT" \
+              -e KAFKA_ACCESS_KEY="$KAFKA_ACCESS_KEY" \
               -e SCHEMA_REGISTRY_URL=$SCHEMA_REGISTRY_URL \
               -e SCHEMA_REGISTRY_USERNAME=$SCHEMA_REGISTRY_USERNAME \
               -e SCHEMA_REGISTRY_PASSWORD=$SCHEMA_REGISTRY_PASSWORD \
@@ -141,10 +141,10 @@ All variants of the Java app take the following arguments (of course
 [Config.java](app/src/main/java/org/example/Config.java). The names chosen 
 match the environment variables used by the container file and `run.sh`.
 
-* `-DKAFKA_SERVICE_URL` - the URL for the Kafka service.
-* `-DCA_PEM_CONTENTS` - the contents of the `ca.pem` file
-* `-DSERVICE_CERT_CONTENTS` - the contents of the `service.cert` file
-* `-DSERVICE_KEY_CONTENTS` - the contents of the `service.key` file
+* `-DKAFKA_BOOTSTRAP_SERVERS` - the URL for the Kafka service.
+* `-DKAFKA_CA_CERT` - the contents of the `ca.pem` file
+* `-DKAFKA_ACCESS_CERT` - the contents of the `service.cert` file
+* `-DKAFKA_ACCESS_KEY` - the contents of the `service.key` file
 * `-DSCHEMA_REGISTRY_URL` - the URL for the schema registry.
 * `-DSCHEMA_REGISTRY_USERNAME` - the user name for accessing the schema
   registry. This defaults to `avnadmin`, which is the default user name for
@@ -194,10 +194,10 @@ The `run.sh` file expects the following environment variables as input
 you'll recognise all but `APP_NAME` from the instructions on running the 
 container and the Java app itself):
 
-- `KAFKA_SERVICE_URL` - the URL of the Kafka service we're using
-- `CA_PEM_CONTENTS` - the contents of the `ca.pem` file
-- `SERVICE_CERT_CONTENTS` - the contents of the `service.cert` file
-- `SERVICE_KEY_CONTENTS` - the contents of the `service.key` file
+- `KAFKA_BOOTSTRAP_SERVERS` - the URL of the Kafka service we're using
+- `KAFKA_CA_CERT` - the contents of the `ca.pem` file
+- `KAFKA_ACCESS_CERT` - the contents of the `service.cert` file
+- `KAFKA_ACCESS_KEY` - the contents of the `service.key` file
 - `SCHEMA_REGISTRY_URL` - the URL for the schema registry
 - `SCHEMA_REGISTRY_USERNAME` - the user name for accessing the schema
   registry. **This is optional** and if it is not given, a value of `avnadmin`
@@ -219,7 +219,7 @@ container and the Java app itself):
   `AnomalyDetectorApp` by the container file.
 
 It sources the `setup_auth.sh` script which makes sure that the
-`CA_PEM_CONTENTS`, `SERVICE_CERT_CONTENTS` and `SERVICE_KEY_CONTENTS`
+`KAFKA_CA_CERT`, `KAFKA_ACCESS_CERT` and `KAFKA_ACCESS_KEY`
 environment variables contain data that is correctly split into lines.
 
 Finally the `run.sh` script  runs the fat Java JAR with the necessary
@@ -352,10 +352,10 @@ docker build -t report_image .
 
 ```shell
 docker run -d --name report-messages-container -p 3000:3000 \
-        -e KAFKA_SERVICE_URL=$KAFKA_SERVICE_URL \
-        -e CA_PEM_CONTENTS=$CA_PEM_CONTENTS \
-        -e SERVICE_CERT_CONTENTS=$SERVICE_CERT_CONTENTS \
-        -e SERVICE_KEY_CONTENTS=$SERVICE_KEY_CONTENTS \
+        -e KAFKA_BOOTSTRAP_SERVERS=$KAFKA_BOOTSTRAP_SERVERS \
+        -e KAFKA_CA_CERT=$KAFKA_CA_CERT \
+        -e KAFKA_ACCESS_CERT=$KAFKA_ACCESS_CERT \
+        -e KAFKA_ACCESS_KEY=$KAFKA_ACCESS_KEY \
         -e SCHEMA_REGISTRY_URL=$SCHEMA_REGISTRY_URL \
         report_image
 ```
@@ -481,11 +481,11 @@ service. There are notes about each command after the command.
 
 While that's running, get the service URL for the new service
 ``` shell
-export KAFKA_SERVICE_URL=$(avn service get $KAFKA_SERVICE_NAME --format '{service_uri}')
+export KAFKA_BOOTSTRAP_SERVERS=$(avn service get $KAFKA_SERVICE_NAME --format '{service_uri}')
 ```
 or for Fish shell
 ```shell
-set -x KAFKA_SERVICE_URL (avn service get $KAFKA_SERVICE_NAME --format '{service_uri}')
+set -x KAFKA_BOOTSTRAP_SERVERS (avn service get $KAFKA_SERVICE_NAME --format '{service_uri}')
 ```
 
 Get the schema registry (Karapace) URL

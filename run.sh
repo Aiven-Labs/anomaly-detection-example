@@ -2,10 +2,10 @@
 
 # We're going to need the following environment variables as input
 #
-# - KAFKA_SERVICE_URL - the URL of the Kafka service we're using
-# - CA_PEM_CONTENTS - the contents of the ca.pem file
-# - SERVICE_CERT_CONTENTS - the contents of the service.cert file
-# - SERVICE_KEY_CONTENTS - the contents of the service.key file
+# - KAFKA_BOOTSTRAP_SERVERS - the URL of the Kafka service we're using
+# - KAFKA_CA_CERT - the contents of the ca.pem file
+# - KAFKA_ACCESS_CERT - the contents of the service.cert file
+# - KAFKA_ACCESS_KEY - the contents of the service.key file
 # - SCHEMA_REGISTRY_URL - the URL for the Karapace schema
 # - SCHEMA_REGISTRY_PASSWORD - the password for the schema registry
 #
@@ -36,10 +36,10 @@ echo "APP_NAME is $APP_NAME"
 echo "RUN THE PROGRAM"
 exec java \
     -cp '$JAVA_HOME/lib/*' \
-    -DKAFKA_SERVICE_URL="$KAFKA_SERVICE_URL"                   \
-    -DCA_PEM_CONTENTS="$CA_PEM_CONTENTS"		       \
-    -DSERVICE_CERT_CONTENTS="$SERVICE_CERT_CONTENTS"           \
-    -DSERVICE_KEY_CONTENTS="$SERVICE_KEY_CONTENTS"             \
+    -DKAFKA_BOOTSTRAP_SERVERS="$KAFKA_BOOTSTRAP_SERVERS"                   \
+    -DKAFKA_CA_CERT="$KAFKA_CA_CERT"		       \
+    -DKAFKA_ACCESS_CERT="$KAFKA_ACCESS_CERT"           \
+    -DKAFKA_ACCESS_KEY="$KAFKA_ACCESS_KEY"             \
     -DSCHEMA_REGISTRY_URL="$SCHEMA_REGISTRY_URL"               \
     -DSCHEMA_REGISTRY_USERNAME="$SCHEMA_REGISTRY_USERNAME"     \
     -DSCHEMA_REGISTRY_PASSWORD="$SCHEMA_REGISTRY_PASSWORD"     \
